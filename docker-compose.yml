@@ -1,0 +1,142 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: job_analytics_postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - job_market_network
+
+  api:
+    build: .
+    container_name: job_analytics_api
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+
+  worker:
+    build: .
+    image: job-market-worker:latest
+    container_name: job_analytics_worker
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+
+    command: python -m app.worker.count_jobs
+
+    networks:
+      - job_market_network
+
+
+  airflow-postgres:
+    image: postgres:16
+    container_name: airflow_postgres
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+    volumes:
+      - airflow_postgres_data:/var/lib/postgresql/data
+    
+    networks:
+      - job_market_network
+
+  airflow-webserver:
+    image: apache/airflow:2.9.1
+    container_name: airflow_webserver
+    depends_on:
+      - airflow-postgres
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: airflow_secret_key
+      _PIP_ADDITIONAL_REQUIREMENTS: apache-airflow-providers-docker
+
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./:/opt/project
+    ports:
+      - "8080:8080"
+    command: webserver
+
+    networks:
+      - job_market_network
+
+  airflow-scheduler:
+    image: apache/airflow:2.9.1
+    container_name: airflow_scheduler
+    depends_on:
+      - airflow-webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      AIRFLOW__WEBSERVER__SECRET_KEY: airflow_secret_key
+      _PIP_ADDITIONAL_REQUIREMENTS: apache-airflow-providers-docker
+
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/opt/project
+    command: scheduler
+
+    networks:
+      - job_market_network
+
+
+volumes:
+  postgres_data:
+  airflow_postgres_data:
+
+
+networks:
+  job_market_network:
+    driver: bridge

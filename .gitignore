@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entorno virtual
+venv/
+.venv/
+
+# Variables de entorno
+.env
+
+# macOS
+.DS_Store
+
+# Datos locales
+data/raw/*
+data/processed/*
+
+# Airflow
+airflow/logs/
+
+# Pytest
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+
+# Docker
+*.log
