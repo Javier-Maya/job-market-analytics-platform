@@ -87,4 +87,4 @@ No:
 
 Current state:
 - Plan approved
-- Pending implementation
+- Implemented and validated

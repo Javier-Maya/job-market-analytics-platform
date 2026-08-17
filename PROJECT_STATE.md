@@ -16,11 +16,10 @@ v1.1 — Minimal Logging + DB Health Check
 `docs/v1_1_plan.md`
 
 ## Estado del plan
-Aprobado y 100% pendiente de implementación.
+Implementado y validado (ver commits d92c3f7, ec4aaaa).
 
 ## Pendiente inmediato
-1. Implementar logging estructurado en `app/pipeline/run_pipeline.py`.
-2. Implementar health check de PostgreSQL en `app/api/main.py`.
+Ninguno — definir próxima iteración (v1.2).
 
 ## Restricciones
 - No modificar loaders.
