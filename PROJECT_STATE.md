@@ -3,8 +3,11 @@
 ## Proyecto
 `job-analytics-platform`
 
-## Último commit estable
+## Checkpoint base de v1
 `71728c5`
+
+## Último checkpoint documental
+`5809625`
 
 ## Estado actual
 v1 funcional
