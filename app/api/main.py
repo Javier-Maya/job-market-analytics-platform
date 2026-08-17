@@ -12,7 +12,15 @@ def get_db_connection():
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        conn.close()
+        return {"status": "ok"}
+    except Exception:
+        raise HTTPException(status_code=503, detail="Database unavailable")
 
 
 @app.get("/jobs")
