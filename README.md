@@ -279,7 +279,7 @@ README.md
 
 ## Próximas Mejoras
 
-- Implementación de pruebas automatizadas (pytest)
+- Implementación de pruebas automatizadas (pytest) — iniciado, cobertura parcial (ver `docs/v1_2_plan.md`)
 - Integración continua mediante GitHub Actions
 - Despliegue en AWS
 - Monitoreo y observabilidad

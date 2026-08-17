@@ -10,18 +10,18 @@
 v1 funcional
 
 ## Iteración siguiente
-v1.1 — Minimal Logging + DB Health Check
+v1.2 — Pytest Setup + First Tests
 
 ## Plan
-`docs/v1_1_plan.md`
+`docs/v1_2_plan.md`
 
 ## Estado del plan
-Implementado y validado (ver commits d92c3f7, ec4aaaa).
+Implementado y validado (ver commit 029e325).
 
 ## Pendiente inmediato
-Ninguno — definir próxima iteración (v1.2).
+Ninguno — definir próxima iteración (v1.3).
 
-## Restricciones
+## Restricciones (aplicadas en v1.1)
 - No modificar loaders.
 - No modificar DAGs.
 - No modificar configuración Docker.
