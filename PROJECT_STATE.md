@@ -20,7 +20,7 @@ v1.2 — Pytest Setup + First Tests (cerrada)
 Ninguno — definir alcance de v1.3.
 
 ## Próximo paso
-Definir y documentar el plan de v1.3 en `docs/` antes de tocar código.
+Definir y documentar el plan de v1.3 en `docs/` antes de tocar código. Candidato a evaluar: `transform_jobs()` no es parte del pipeline real (`load_clean_jobs()` duplica esa lógica de forma independiente) — ver `docs/DECISIONS.md`.
 
 ## Blockers
 Ninguno.

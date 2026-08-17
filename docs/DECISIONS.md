@@ -45,3 +45,19 @@ Resuelve el riesgo real sin modificar código de producción/diagnóstico ya fun
 
 ### Trade-offs
 Si en el futuro se agregan más scripts de diagnóstico fuera de `tests/` con nombres `test_*`, seguirán siendo invisibles para pytest — la protección depende de la ubicación del archivo, no de una convención de nombre.
+
+---
+
+## transform_jobs() no es parte del pipeline real — el test de v1.2 cubre código huérfano
+
+### Contexto
+Al revisar por qué `test_transform_jobs.py` necesita mockear en vez de pasarle `fake_rows` directamente como parámetro, se descubrió (`grep -rn "transform_jobs" app/`) que `transform_jobs()` no tiene ningún caller real en el proyecto — solo se invoca a sí misma en su propio `if __name__ == "__main__":`. La transformación que de verdad corre en el pipeline (`run_pipeline.py` → `load_clean_jobs()`) tiene su propia lógica de mapeo de campos escrita e independiente, sin pasar por `transform_jobs()` en ningún momento.
+
+### Decisión
+No modificar nada en esta sesión. `tests/test_transform_jobs.py` se mantiene tal cual — sigue siendo válido como primer ejercicio de aprendizaje de pytest/mock, aunque valide una función que la aplicación real no ejecuta. El hallazgo queda documentado como candidato de evaluación para v1.3, no como bug a corregir ahora.
+
+### Razón
+Cambiar el alcance de v1.2 a mitad de camino, después de ya implementado, validado y pusheado, no se justifica solo por este hallazgo — es una mejora para una iteración futura, no una urgencia. v1.3 debería evaluar con calma: (a) testear `load_clean_jobs()` en su lugar, que sí corre de verdad; (b) eliminar `transform_jobs.py` si es código muerto; o (c) refactorizar `load_clean_jobs()` para reusar la lógica de `transform_jobs()` en vez de duplicarla.
+
+### Trade-offs
+Mientras tanto, la cobertura de test real del pipeline (`load_clean_jobs()`) sigue siendo cero — el test actual da una sensación de cobertura sobre la lógica de transformación que no corresponde al código que realmente se ejecuta en producción.
