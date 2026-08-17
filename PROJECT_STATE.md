@@ -6,9 +6,6 @@
 ## Checkpoint base de v1
 `71728c5`
 
-## Último checkpoint documental
-`5809625`
-
 ## Estado actual
 v1 funcional
 
@@ -33,6 +30,5 @@ Aprobado y 100% pendiente de implementación.
 - No agregar dependencias.
 - No refactorizar la arquitectura.
 
-## Estado Git
-- `docs/v1_1_plan.md` aún no está trackeado.
-- `PROJECT_STATE.md` fue creado y está pendiente de commit.
+## Estado de documentación
+El plan de v1.1 y el estado operativo del proyecto están versionados en Git.
